@@ -6,13 +6,21 @@ import {
   ChevronRight, Github, Globe, Twitter,
   Moon, Sun, Check, ExternalLink, X,
   Trash2, LogOut, HelpCircle, Mail,
-  Youtube, Disc, Coffee, Link as LinkIcon
+  Youtube, Disc, Coffee, Link as LinkIcon,
+  RefreshCw, WifiOff
 } from 'lucide-react';
 
 // ==========================================
-// SECTION 1: STYLES & ANIMATIONS
+// CONFIGURATION
 // ==========================================
-// Injecting custom keyframes for that "app-like" feel without external config
+
+// REPLACE THIS WITH YOUR ACTUAL RENDER URL
+// Make sure your backend endpoint returns { shaders: [], developers: [] }
+const API_URL = "https://newb-shader-backend.onrender.com/api/sync"; 
+
+// ==========================================
+// STYLES & ANIMATIONS
+// ==========================================
 const styleTag = document.createElement('style');
 styleTag.innerHTML = `
   @keyframes fadeInUp {
@@ -26,9 +34,20 @@ styleTag.innerHTML = `
     from { transform: translateX(100%); }
     to { transform: translateX(0); }
   }
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+  .animate-slide-in-right {
+    animation: slideInRight 0.3s ease-out forwards;
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+  .dark .skeleton {
+    background: linear-gradient(90deg, #262626 25%, #333333 50%, #262626 75%);
   }
   .scrollbar-hide::-webkit-scrollbar {
       display: none;
@@ -41,103 +60,7 @@ styleTag.innerHTML = `
 document.head.appendChild(styleTag);
 
 // ==========================================
-// SECTION 2: DATABASE
-// ==========================================
-
-const DATABASE = {
-  "developers": [
-    {
-      "id": "0_devendrn", 
-      "name": "devendrn",
-      "website": "https://devendrn.github.io",
-      "icon": "https://avatars.githubusercontent.com/u/91605478?v=4",
-      "verified": true,
-      "socials": [
-        { "title": "GitHub",   "link": "https://github.com/devendrn" },
-        { "title": "Discord",  "link": "https://discord.gg/example" },
-        { "title": "YouTube",  "link": "https://youtube.com/@devendrn" },
-        { "title": "Donate",   "link": "https://ko-fi.com/devendrn" }
-      ],
-      "role": "Lead Developer",
-      "location": "India",
-      "bio": "Creator of Newb Shaders. Focused on performance and aesthetics for Bedrock Edition."
-    },
-    {
-      "id": "1_xenon",
-      "name": "Xenon",
-      "website": "",
-      "icon": "https://api.dicebear.com/7.x/avataaars/svg?seed=Xenon&backgroundColor=c0aede",
-      "verified": false,
-      "socials": [
-        { "title": "GitHub", "link": "https://github.com/xenon" }
-      ],
-      "role": "Contributor",
-      "location": "USA",
-      "bio": "Helps with sky calculations and fog rendering optimization."
-    }
-  ],
-  "shaders": [
-    {
-      "id": 0,
-      "title": "Newb X Legacy",
-      "creator": "0_devendrn", 
-      "readme": "newb_x_legacy",
-      "platforms": ["ANDROID", "IOS", "WINDOWS"],
-      "supportedVersion": "1.21.20",
-      "downloadLink": "https://github.com/devendrn/newb-x-mcbe/releases/download/v16/newb-x-legacy-16.0-merged.mcpack",
-      "screenshots": [
-        "https://media.forgecdn.net/attachments/1067/794/overworld-cave-0.jpg",
-        "https://media.forgecdn.net/attachments/1067/806/underwater-1.jpg",
-        "https://media.forgecdn.net/attachments/1067/805/overworld-sunrise-0.jpg",
-        "https://media.forgecdn.net/attachments/1067/797/overworld-night-1.jpg"
-      ],
-      "otherLinks": [
-        { "title": "GitHub", "link": "https://github.com/devendrn/newb-x-mcbe" },
-        { "title": "MCPEDL post", "link": "https://mcpedl.com/newb-shader/" },
-        { "title": "Website", "link": "https://devendrn.github.io/" }
-      ],
-      "tags": ["Low End", "Vanilla+"],
-      "description": "The classic look. Soft lighting, vibrant clouds, and water reflections optimized for low-end devices. Maintains the vanilla feel while enhancing atmosphere.",
-      "updated_at": "2023-10-20"
-    },
-    {
-      "id": 1,
-      "title": "Newb Refined",
-      "creator": "0_devendrn",
-      "readme": "newb_refined",
-      "platforms": ["ANDROID", "WINDOWS"],
-      "supportedVersion": "1.20.0",
-      "downloadLink": "https://example.com/refined.mcpack",
-      "screenshots": [
-        "https://media.forgecdn.net/attachments/1067/803/overworld-night-3.jpg",
-        "https://media.forgecdn.net/attachments/1067/786/overworld-night-2.jpg"
-      ],
-      "otherLinks": [],
-      "tags": ["Ultra", "Cinematic"],
-      "description": "A sharper, more defined version of Newb. Features enhanced shadows, waving plants, and a distinct color correction profile for a cinematic experience.",
-      "updated_at": "2023-11-05"
-    },
-    {
-      "id": 2,
-      "title": "Soft Clouds Addon",
-      "creator": "1_xenon",
-      "readme": "soft_clouds",
-      "platforms": ["ANDROID", "IOS", "WINDOWS", "XBOX"],
-      "supportedVersion": "1.19.0+",
-      "downloadLink": "https://example.com/clouds.mcpack",
-      "screenshots": [
-        "https://images.unsplash.com/photo-1534233650905-52b810e8e6f7?auto=format&fit=crop&q=80&w=800"
-      ],
-      "otherLinks": [],
-      "tags": ["Atmospheric"],
-      "description": "A subpack specifically for softer, fluffier clouds compatible with most other resource packs.",
-      "updated_at": "2023-09-15"
-    }
-  ]
-};
-
-// ==========================================
-// SECTION 3: HELPERS
+// HELPERS
 // ==========================================
 
 const PLATFORM_MAP = {
@@ -152,7 +75,7 @@ const PLATFORM_MAP = {
 };
 
 const getSocialIcon = (title) => {
-  const lowerTitle = title.toLowerCase();
+  const lowerTitle = title?.toLowerCase() || "";
   if (lowerTitle.includes('github')) return <Github size={20} />;
   if (lowerTitle.includes('discord')) return <Disc size={20} />;
   if (lowerTitle.includes('youtube')) return <Youtube size={20} />;
@@ -162,21 +85,25 @@ const getSocialIcon = (title) => {
   return <LinkIcon size={20} />;
 };
 
+// Robust normalizer for potentially incomplete API data
 const normalizeShaderData = (shader) => ({
   ...shader,
+  title: shader.title || "Untitled Shader",
   thumbnail: shader.screenshots?.[0] || "https://via.placeholder.com/800x400?text=No+Image",
-  description: shader.description || "No description available. Tap to view details.",
+  description: shader.description || "No description available.",
   tags: shader.tags || ["Shader"],
-  platforms: shader.platforms || []
+  platforms: shader.platforms || [],
+  otherLinks: shader.otherLinks || [],
+  supportedVersion: shader.supportedVersion || "Unknown"
 });
 
 const TAG_OPTIONS = ["Ultra", "Low End", "Vanilla+", "Atmospheric", "Cinematic"];
 
 // ==========================================
-// SECTION 4: UI COMPONENTS
+// UI COMPONENTS
 // ==========================================
 
-const Chip = ({ label, active, onClick, icon }) => (
+const Chip = ({ label, active, onClick }) => (
   <button
     onClick={onClick}
     className={`
@@ -186,14 +113,12 @@ const Chip = ({ label, active, onClick, icon }) => (
         : 'bg-neutral-200 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400 hover:bg-neutral-300 dark:hover:bg-neutral-700'}
     `}
   >
-    {icon}
     {label}
   </button>
 );
 
 const PlatformBadge = ({ type }) => {
-  const key = type.toUpperCase(); 
-  const config = PLATFORM_MAP[key] || PLATFORM_MAP['ANDROID']; 
+  const config = PLATFORM_MAP[type?.toUpperCase()] || PLATFORM_MAP['ANDROID']; 
   return (
     <div title={config.label} className="flex items-center justify-center w-6 h-6 rounded-full bg-neutral-100 text-neutral-600 dark:bg-neutral-800 dark:text-neutral-400">
       {config.icon}
@@ -208,7 +133,7 @@ const Toast = ({ message, type, onClose }) => {
   }, [onClose]);
 
   return (
-    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[90] flex items-center gap-3 px-4 py-3 rounded-2xl bg-neutral-900/90 dark:bg-white/90 text-white dark:text-neutral-900 shadow-xl backdrop-blur-md min-w-[200px] max-w-[90vw] animate-[fadeInUp_0.4s_ease-out_forwards]">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[90] flex items-center gap-3 px-4 py-3 rounded-2xl bg-neutral-900/90 dark:bg-white/90 text-white dark:text-neutral-900 shadow-xl backdrop-blur-md min-w-[200px] max-w-[90vw] animate-fade-in-up">
       {type === 'success' && <Check size={18} className="text-green-500" />}
       {type === 'download' && <Download size={18} className="text-blue-400" />}
       {type === 'heart' && <Heart size={18} className="text-red-500 fill-current" />}
@@ -217,14 +142,23 @@ const Toast = ({ message, type, onClose }) => {
   );
 };
 
-// Shader Card Component
+// Skeleton Loader
+const SkeletonCard = () => (
+  <div className="rounded-[2rem] overflow-hidden bg-white dark:bg-neutral-800 shadow-sm h-72 animate-pulse">
+    <div className="h-48 w-full skeleton" />
+    <div className="p-5 space-y-3">
+      <div className="h-4 w-3/4 skeleton rounded-md" />
+      <div className="h-3 w-1/2 skeleton rounded-md" />
+    </div>
+  </div>
+);
+
 const ShaderCard = ({ shader, onClick, isFav, index }) => {
   const normalized = normalizeShaderData(shader);
   
   return (
     <div 
       onClick={onClick}
-      // Inline delay for staggered animation effect
       style={{ animationDelay: `${index * 0.1}s` }}
       className="group relative bg-white dark:bg-neutral-800 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer active:scale-[0.98] animate-fade-in-up opacity-0"
     >
@@ -269,7 +203,6 @@ const ShaderCard = ({ shader, onClick, isFav, index }) => {
   );
 };
 
-// Animated Side Menu
 const SideMenu = ({ isOpen, onClose, activeTab, onNavigate, darkMode, toggleDarkMode }) => {
   useEffect(() => {
     const handleEsc = (e) => { if (e.key === 'Escape') onClose(); };
@@ -279,13 +212,10 @@ const SideMenu = ({ isOpen, onClose, activeTab, onNavigate, darkMode, toggleDark
 
   return (
     <>
-      {/* Backdrop with Fade Animation */}
       <div 
         className={`fixed inset-0 bg-black/50 backdrop-blur-sm z-50 transition-opacity duration-300 ease-in-out ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
         onClick={onClose} 
       />
-      
-      {/* Menu Panel with Slide Animation */}
       <div 
         className={`fixed inset-y-0 right-0 w-3/4 max-w-xs bg-white dark:bg-neutral-900 z-50 shadow-2xl flex flex-col transform transition-transform duration-300 ease-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
@@ -337,35 +267,67 @@ const SideMenu = ({ isOpen, onClose, activeTab, onNavigate, darkMode, toggleDark
 };
 
 // ==========================================
-// SECTION 5: MAIN APP LOGIC
+// MAIN APP LOGIC
 // ==========================================
 
 export default function App() {
-  const [shaders, setShaders] = useState(DATABASE.shaders);
-  const [devs, setDevs] = useState(DATABASE.developers);
+  // State for Data
+  const [data, setData] = useState({ shaders: [], developers: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
+  // UI State
   const [activeTab, setActiveTab] = useState('shaders');
   const [selectedShader, setSelectedShader] = useState(null);
   const [selectedDev, setSelectedDev] = useState(null);
-  
   const [darkMode, setDarkMode] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterTag, setFilterTag] = useState('All');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [favorites, setFavorites] = useState([0]); 
+  const [favorites, setFavorites] = useState([]); 
   const [toast, setToast] = useState(null); 
   const [downloading, setDownloading] = useState(false);
 
+  // --- FETCH DATA ---
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log("Fetching data from:", API_URL);
+      const response = await fetch(API_URL);
+      
+      if (!response.ok) {
+        throw new Error(`Server responded with ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log("Data loaded:", result);
+      
+      // Ensure data structure is valid
+      setData({
+        shaders: result.shaders || [],
+        developers: result.developers || []
+      });
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError("Failed to load content. Please check your internet connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
+    fetchData();
     if (darkMode) document.documentElement.classList.add('dark');
     else document.documentElement.classList.remove('dark');
   }, [darkMode]);
 
-  // Prevent scrolling when modals are open
+  // Scroll Lock
   useEffect(() => {
     document.body.style.overflow = (isMenuOpen || selectedShader || selectedDev) ? 'hidden' : 'unset';
   }, [isMenuOpen, selectedShader, selectedDev]);
 
+  // Helpers
   const showToast = (message, type = 'success') => setToast({ message, type });
 
   const toggleFavorite = (id) => {
@@ -381,6 +343,9 @@ export default function App() {
   const handleDownload = (fileName, url) => {
     setDownloading(true);
     showToast(`Opening ${fileName}...`, "download");
+    
+    // In a real app, use: window.location.href = url;
+    // Simulating delay for UX
     setTimeout(() => {
       setDownloading(false);
       showToast("Download Started!", "success");
@@ -389,9 +354,13 @@ export default function App() {
 
   const handleSocial = (platform, url) => {
      showToast(`Opening ${platform}...`, "success");
+     // window.open(url, '_blank');
   };
 
-  const handleClearCache = () => showToast("Cache cleared successfully", "success");
+  const handleClearCache = () => {
+    showToast("Cache cleared successfully", "success");
+    fetchData(); // Reload data on clear cache
+  };
 
   const goToDevProfile = (dev) => {
     setSelectedDev(dev);
@@ -402,29 +371,31 @@ export default function App() {
     setSelectedShader(shader);
   };
 
-  // Navigation Handlers
   const goBackFromShader = () => setSelectedShader(null);
   const goBackFromDev = () => setSelectedDev(null);
   
   const handleMenuNavigate = (tab) => {
     setActiveTab(tab);
     setIsMenuOpen(false);
-  }
+  };
 
+  // Filter Logic
   const filteredShaders = useMemo(() => {
-    return shaders.filter(shader => {
+    if (!data.shaders) return [];
+    return data.shaders.filter(shader => {
       const norm = normalizeShaderData(shader);
       const matchesSearch = norm.title.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesTag = filterTag === 'All' || norm.tags.includes(filterTag);
+      // Use tag filtering only if tags exist
+      const matchesTag = filterTag === 'All' || (norm.tags && norm.tags.includes(filterTag));
       return matchesSearch && matchesTag;
     });
-  }, [shaders, searchQuery, filterTag]);
+  }, [data.shaders, searchQuery, filterTag]);
 
   // --- RENDER VIEWS ---
 
   const renderShaderList = () => (
-    // Added animate-fade-in-up and key to trigger animation on mount/tab switch
     <div key="shaders" className="pb-24 space-y-6 animate-fade-in-up">
+      {/* Filter Bar */}
       <div className="sticky top-0 z-20 pt-4 pb-2 bg-neutral-50/95 dark:bg-neutral-900/95 backdrop-blur-sm px-4 space-y-4">
         <div className="relative group">
           <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-neutral-500"><Search size={20} /></div>
@@ -441,20 +412,25 @@ export default function App() {
           {TAG_OPTIONS.map(tag => <Chip key={tag} label={tag} active={filterTag === tag} onClick={() => setFilterTag(tag)} />)}
         </div>
       </div>
+
+      {/* List */}
       <div className="px-4 space-y-4 min-h-[50vh]">
         {filteredShaders.map((shader, index) => (
-          <ShaderCard key={shader.id} shader={shader} index={index} onClick={() => goToShaderDetail(shader)} isFav={favorites.includes(shader.id)} />
+          <ShaderCard key={shader.id || index} shader={shader} index={index} onClick={() => goToShaderDetail(shader)} isFav={favorites.includes(shader.id)} />
         ))}
+        {filteredShaders.length === 0 && (
+          <div className="text-center py-10 text-neutral-500">No shaders found matching your search.</div>
+        )}
       </div>
     </div>
   );
 
   const renderDevProfile = () => {
     if (!selectedDev) return null;
-    const devShaders = shaders.filter(s => s.creator === selectedDev.id);
+    const devShaders = data.shaders.filter(s => s.creator === selectedDev.id);
     
     return (
-      <div className="fixed inset-0 z-40 bg-neutral-50 dark:bg-neutral-900 overflow-y-auto animate-[slideInRight_0.3s_ease-out]">
+      <div className="fixed inset-0 z-40 bg-neutral-50 dark:bg-neutral-900 overflow-y-auto animate-slide-in-right">
         <div className="h-48 bg-gradient-to-br from-teal-400 to-blue-500 relative">
            <button 
             onClick={goBackFromDev}
@@ -464,14 +440,14 @@ export default function App() {
           </button>
         </div>
 
-        <div className="px-6 relative -mt-16 pb-24 animate-[fadeInUp_0.5s_ease-out_0.1s_both]">
+        <div className="px-6 relative -mt-16 pb-24 animate-fade-in-up">
           <div className="flex justify-between items-end mb-4">
             <div className="relative">
-               <img src={selectedDev.icon} alt={selectedDev.name} className="w-32 h-32 rounded-full border-4 border-neutral-50 dark:border-neutral-900 bg-white dark:bg-neutral-800 shadow-lg" />
+               <img src={selectedDev.icon} alt={selectedDev.name} className="w-32 h-32 rounded-full border-4 border-neutral-50 dark:border-neutral-900 bg-white dark:bg-neutral-800 shadow-lg object-cover" />
                {selectedDev.verified && <div className="absolute bottom-1 right-1 bg-teal-500 text-white p-1.5 rounded-full border-4 border-neutral-50 dark:border-neutral-900"><Check size={16} strokeWidth={4} /></div>}
             </div>
             <div className="flex gap-2 mb-2">
-              {selectedDev.socials.map((social, idx) => (
+              {selectedDev.socials?.map((social, idx) => (
                 <button 
                   key={idx}
                   onClick={() => handleSocial(social.title, social.link)} 
@@ -487,8 +463,8 @@ export default function App() {
           <h1 className="text-3xl font-bold text-neutral-900 dark:text-white flex items-center gap-2">
             {selectedDev.name}
           </h1>
-          <p className="text-teal-600 dark:text-teal-400 font-medium mb-4">{selectedDev.role}</p>
-          <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed mb-6">{selectedDev.bio}</p>
+          <p className="text-teal-600 dark:text-teal-400 font-medium mb-4">{selectedDev.role || "Developer"}</p>
+          <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed mb-6">{selectedDev.bio || "No bio available."}</p>
 
           <h2 className="text-xl font-bold text-neutral-900 dark:text-white mb-4">Projects</h2>
           <div className="space-y-4">
@@ -506,12 +482,12 @@ export default function App() {
   };
 
   const renderDetailView = () => {
-    const dev = devs.find(d => d.id === selectedShader.creator) || { name: 'Unknown', icon: '', role: 'Developer' };
+    const dev = data.developers.find(d => d.id === selectedShader.creator) || { name: 'Unknown', icon: '', role: 'Developer' };
     const isFav = favorites.includes(selectedShader.id);
     const normalized = normalizeShaderData(selectedShader);
 
     return (
-      <div className="fixed inset-0 z-50 bg-white dark:bg-neutral-900 overflow-y-auto animate-[fadeInUp_0.4s_ease-out]">
+      <div className="fixed inset-0 z-50 bg-white dark:bg-neutral-900 overflow-y-auto animate-fade-in-up">
         <div className="fixed top-4 left-4 z-30">
           <button onClick={goBackFromShader} className="p-3 rounded-full bg-black/30 backdrop-blur-md text-white hover:bg-black/50 transition-colors active:scale-90">
             <ArrowLeft size={24} />
@@ -530,14 +506,14 @@ export default function App() {
         </div>
 
         <div className="-mt-16 relative px-6 pb-10">
-          <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 animate-[fadeInUp_0.5s_ease-out_0.1s_both]">{normalized.title}</h1>
-          <div className="flex items-center gap-3 mb-6 text-neutral-500 dark:text-neutral-400 animate-[fadeInUp_0.5s_ease-out_0.2s_both]">
+          <h1 className="text-4xl font-bold text-neutral-900 dark:text-white mb-2 animate-fade-in-up" style={{animationDelay: '0.1s'}}>{normalized.title}</h1>
+          <div className="flex items-center gap-3 mb-6 text-neutral-500 dark:text-neutral-400 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
             <span className="bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-bold px-2 py-1 rounded-md">{normalized.supportedVersion}</span>
-            <span>•</span>
-            <span className="text-sm">Updated {normalized.updated_at}</span>
+            {/* <span>•</span> */}
+            {/* <span className="text-sm">Updated {normalized.updated_at || "Recently"}</span> */}
           </div>
 
-          <div className="mb-8 space-y-3 animate-[fadeInUp_0.5s_ease-out_0.3s_both]">
+          <div className="mb-8 space-y-3 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
             <button 
               onClick={() => handleDownload(`${normalized.title}.mcpack`, normalized.downloadLink)} 
               disabled={downloading} 
@@ -562,13 +538,13 @@ export default function App() {
             </div>
           </div>
 
-          <div className="mb-8 animate-[fadeInUp_0.5s_ease-out_0.4s_both]">
+          <div className="mb-8 animate-fade-in-up" style={{animationDelay: '0.4s'}}>
             <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-3">About</h3>
             <p className="text-neutral-600 dark:text-neutral-400 leading-relaxed">{normalized.description}</p>
           </div>
 
           {normalized.screenshots && normalized.screenshots.length > 0 && (
-            <div className="mb-8 animate-[fadeInUp_0.5s_ease-out_0.5s_both]">
+            <div className="mb-8 animate-fade-in-up" style={{animationDelay: '0.5s'}}>
               <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-4">Gallery</h3>
               <div className="flex gap-4 overflow-x-auto -mx-6 px-6 pb-4 snap-x">
                 {normalized.screenshots.map((src, idx) => (
@@ -578,13 +554,13 @@ export default function App() {
             </div>
           )}
 
-          <div className="mb-24 animate-[fadeInUp_0.5s_ease-out_0.6s_both]">
+          <div className="mb-24 animate-fade-in-up" style={{animationDelay: '0.6s'}}>
             <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-4">Developer</h3>
             <div onClick={() => goToDevProfile(dev)} className="flex items-center gap-4 p-4 rounded-2xl bg-neutral-100 dark:bg-neutral-800 cursor-pointer active:bg-neutral-200 dark:active:bg-neutral-700 transition-colors active:scale-98">
               <img src={dev.icon} alt={dev.name} className="w-14 h-14 rounded-full bg-white" />
               <div>
                 <h4 className="font-bold text-neutral-900 dark:text-white">{dev.name}</h4>
-                <p className="text-xs text-neutral-500 uppercase tracking-wide font-semibold">{dev.role}</p>
+                <p className="text-xs text-neutral-500 uppercase tracking-wide font-semibold">{dev.role || "Developer"}</p>
               </div>
               <button className="ml-auto p-2 rounded-full bg-neutral-200 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300"><ChevronRight size={20} /></button>
             </div>
@@ -595,11 +571,10 @@ export default function App() {
   };
 
   const renderDevsList = () => (
-    // Key added for animation trigger
     <div key="devs" className="px-4 pt-6 pb-24 animate-fade-in-up">
       <h2 className="text-3xl font-bold text-neutral-900 dark:text-white mb-6 px-2">Developers</h2>
       <div className="space-y-4">
-        {devs.map((dev, idx) => (
+        {data.developers.map((dev, idx) => (
           <div 
             key={dev.id} 
             onClick={() => goToDevProfile(dev)} 
@@ -608,12 +583,12 @@ export default function App() {
           >
             <div className="flex flex-col items-center text-center">
               <div className="relative">
-                <img src={dev.icon} alt={dev.name} className="w-24 h-24 rounded-full mb-4 bg-teal-50 dark:bg-teal-900/30 shadow-md" />
+                <img src={dev.icon} alt={dev.name} className="w-24 h-24 rounded-full mb-4 bg-teal-50 dark:bg-teal-900/30 shadow-md object-cover" />
                 {dev.verified && <div className="absolute -bottom-1 -right-1 bg-teal-500 text-white p-1.5 rounded-full border-4 border-white dark:border-neutral-800"><Check size={14} strokeWidth={4} /></div>}
               </div>
               <h3 className="text-xl font-bold text-neutral-900 dark:text-white">{dev.name}</h3>
-              <p className="text-teal-600 dark:text-teal-400 font-medium text-sm mb-2">{dev.role}</p>
-              <p className="text-neutral-500 text-xs mb-4 flex items-center gap-1"><Globe size={12}/> {dev.location}</p>
+              <p className="text-teal-600 dark:text-teal-400 font-medium text-sm mb-2">{dev.role || "Developer"}</p>
+              <p className="text-neutral-500 text-xs mb-4 flex items-center gap-1"><Globe size={12}/> {dev.location || "Earth"}</p>
               <button className="w-full py-3 rounded-2xl bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 font-bold text-sm group-hover:bg-teal-100 dark:group-hover:bg-teal-900/50 transition-colors active:scale-95">
                 View Profile
               </button>
@@ -628,7 +603,7 @@ export default function App() {
     <div key="settings" className="px-4 pt-6 pb-24 animate-fade-in-up">
       <h2 className="text-3xl font-bold text-neutral-900 dark:text-white mb-6 px-2">Settings</h2>
       <div className="space-y-6">
-        <section className="animate-[fadeInUp_0.4s_ease-out_0.1s_both]">
+        <section className="animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <h3 className="text-sm font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-3 px-2">Appearance</h3>
           <div className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-sm">
             <div className="p-4 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-700">
@@ -642,12 +617,12 @@ export default function App() {
             </div>
           </div>
         </section>
-        <section className="animate-[fadeInUp_0.4s_ease-out_0.2s_both]">
+        <section className="animate-fade-in-up" style={{animationDelay: '0.2s'}}>
           <h3 className="text-sm font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider mb-3 px-2">About</h3>
           <div className="bg-white dark:bg-neutral-800 rounded-3xl overflow-hidden shadow-sm">
              <div className="p-4 flex items-center justify-between border-b border-neutral-100 dark:border-neutral-700">
               <span className="font-medium text-neutral-900 dark:text-white">Version</span>
-              <span className="text-neutral-500">2.8.0 (Smooth)</span>
+              <span className="text-neutral-500">3.0.0 (Online)</span>
             </div>
              <button onClick={handleClearCache} className="w-full p-4 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors active:bg-neutral-100 dark:active:bg-neutral-700">
               <div className="flex items-center gap-2 text-red-500"><Trash2 size={18} /><span className="font-medium">Clear Cache</span></div>
@@ -681,14 +656,12 @@ export default function App() {
           <header className="px-6 pt-12 pb-2 flex items-center justify-between">
             <div>
                <h1 className="text-2xl font-bold text-neutral-900 dark:text-white tracking-tight">
-                {activeTab === 'shaders' && 'Newb Shaders'}
-                {activeTab === 'devs' && 'Contributors'}
-                {activeTab === 'settings' && 'Preferences'}
+                {activeTab === 'shaders' && 'Newb Hub'}
+                {activeTab === 'devs' && 'Developers'}
+                {activeTab === 'settings' && 'Settings'}
               </h1>
               <p className="text-neutral-500 text-sm font-medium">
-                 {activeTab === 'shaders' && 'Explore the collection'}
-                 {activeTab === 'devs' && 'Meet the team'}
-                 {activeTab === 'settings' && 'Customize your app'}
+                 {activeTab === 'shaders' ? 'Explore shaders' : activeTab === 'devs' ? 'Meet the creators' : 'App preferences'}
               </p>
             </div>
             <button onClick={() => setIsMenuOpen(true)} className="p-2 rounded-full bg-white dark:bg-neutral-800 shadow-sm text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors active:scale-90">
@@ -696,13 +669,35 @@ export default function App() {
             </button>
           </header>
 
-          {/* Using key on Main to trigger unmount/remount animations when tab changes */}
-          <main className="w-full max-w-md mx-auto md:max-w-full min-h-screen">
-            {activeTab === 'shaders' && renderShaderList()}
-            {activeTab === 'devs' && renderDevsList()}
-            {activeTab === 'settings' && renderSettings()}
+          {/* Main Content Area */}
+          <main className="w-full max-w-md mx-auto md:max-w-full pb-32 px-4">
+            
+            {/* Loading State */}
+            {loading && (
+              <div className="space-y-4 mt-4">
+                <SkeletonCard />
+                <SkeletonCard />
+              </div>
+            )}
+
+            {/* Error State */}
+            {error && !loading && (
+              <div className="flex flex-col items-center justify-center py-20 text-center animate-fade-in-up">
+                <WifiOff size={48} className="text-neutral-400 mb-4" />
+                <p className="text-neutral-500 mb-4">{error}</p>
+                <button onClick={fetchData} className="flex items-center gap-2 px-6 py-2 bg-teal-500 text-white rounded-full font-bold active:scale-95 transition-transform">
+                  <RefreshCw size={18} /> Retry
+                </button>
+              </div>
+            )}
+
+            {/* Success Views */}
+            {!loading && !error && activeTab === 'shaders' && renderShaderList()}
+            {!loading && !error && activeTab === 'devs' && renderDevsList()}
+            {!loading && !error && activeTab === 'settings' && renderSettings()}
           </main>
 
+          {/* Bottom Nav */}
           <nav className="fixed bottom-0 left-0 right-0 bg-neutral-50/90 dark:bg-neutral-900/90 backdrop-blur-lg border-t border-neutral-200 dark:border-neutral-800 pb-safe pt-2 px-6 z-30">
             <div className="flex justify-around items-center h-16 max-w-md mx-auto">
               {['shaders', 'devs', 'settings'].map(tab => (
