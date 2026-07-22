@@ -1,13 +1,13 @@
 {
-  "name": "newb-shaders-app",
-  "private": true,
-  "version": "1.2.0",
+   "name": "newb-shaders-app",
   "type": "module",
+  "version": "2.5.0", 
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "bump-version": "npm version patch --no-git-tag-version && npx cap sync",
+    "bump-minor": "npm version minor --no-git-tag-version && npx cap sync"
   },
   "dependencies": {
     "@capacitor/android": "^7.4.4",
