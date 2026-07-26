@@ -5,6 +5,7 @@ import { Chip } from '../components/Shared';
 // Imports fixed for ShaderList
 import { normalizeShaderData, TAG_OPTIONS } from '../utils/index';
 
+
 const ShaderList = ({ 
   data, favorites, onShaderClick, compactMode, setCompactMode, themeColor 
 }) => {
@@ -29,23 +30,48 @@ const ShaderList = ({
     }
   };
 
-  const filteredShaders = useMemo(() => {
+  
+
+ const filteredShaders = useMemo(() => {
     if (!data.shaders) return [];
+    
     let result = data.shaders.filter(shader => {
       const norm = normalizeShaderData(shader);
+      
+      // Search Box Logic
       const matchesSearch = norm.title.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      // Category / Tag Logic
       let matchesTag = true;
       if (filterTag !== 'All') {
-        if (/^\d/.test(filterTag)) matchesTag = norm.supportedVersion.includes(filterTag);
-        else matchesTag = norm.tags && norm.tags.includes(filterTag);
+        if (filterTag === '1.26.30+') {
+          // New logic for 1.26.30+
+          matchesTag = norm.supportedVersion && norm.supportedVersion.includes('1.26.30');
+        } else if (filterTag === 'Android Only') {
+          // New logic for Android Only
+          matchesTag = norm.platforms && norm.platforms.length === 1 && norm.platforms.includes('ANDROID');
+        } else if (/^\d/.test(filterTag)) {
+          // Existing logic for other version numbers
+          matchesTag = norm.supportedVersion && norm.supportedVersion.includes(filterTag);
+        } else {
+          // Existing logic for general text tags
+          matchesTag = norm.tags && norm.tags.includes(filterTag);
+        }
       }
+      
       return matchesSearch && matchesTag;
     });
-    if (sortOrder === 'Newest') result.sort((a, b) => b.id - a.id);
-    else if (sortOrder === 'A-Z') result.sort((a, b) => a.title.localeCompare(b.title));
+
+    // Sorting Logic
+    if (sortOrder === 'Newest') {
+      result.sort((a, b) => b.id - a.id);
+    } else if (sortOrder === 'A-Z') {
+      result.sort((a, b) => a.title.localeCompare(b.title));
+    }
+    
     return result;
   }, [data.shaders, searchQuery, filterTag, sortOrder]);
-
+  
   return (
     <div className="pb-24 space-y-6 animate-fade-in-up">
       <div className="sticky top-0 z-20 pt-4 pb-2 bg-neutral-50/95 dark:bg-neutral-900/95 backdrop-blur-md px-4 space-y-4 shadow-sm transition-colors duration-300">

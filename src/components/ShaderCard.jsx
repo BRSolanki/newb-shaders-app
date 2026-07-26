@@ -36,10 +36,12 @@ const ShaderCard = ({ shader, onClick, index, isFav, compact, theme }) => {
           <div className="flex justify-between items-end">
             <div>
               <h3 className="text-2xl font-bold text-white mb-2 drop-shadow-md">{normalized.title}</h3>
-              <div className="flex items-center gap-3">
-                <span className={`px-2.5 py-1 rounded-lg backdrop-blur-md bg-white/20 border border-white/10 text-white text-xs font-bold tracking-wider`}>{normalized.supportedVersion}</span>
-                <div className="flex -space-x-1">{normalized.platforms.slice(0,3).map(p => <PlatformBadge key={p} type={p} />)}</div>
-              </div>
+              <div className="flex items-center gap-2">
+  <span className={`px-2.5 py-1 rounded-lg backdrop-blur-md bg-white/20 border border-white/10 text-white text-[11px] font-bold tracking-wider`}>
+    {normalized.supportedVersion}
+  </span>
+  <PlatformBadge platforms={normalized.platforms} />
+</div>
             </div>
             {isFav && (
               <div className="bg-red-500 p-2.5 rounded-full text-white shadow-lg animate-fade-in-up">
@@ -52,7 +54,29 @@ const ShaderCard = ({ shader, onClick, index, isFav, compact, theme }) => {
       <div className="p-6">
         <p className="text-neutral-600 dark:text-neutral-400 line-clamp-2 text-sm leading-relaxed mb-4">{typeof normalized.description === 'string' ? normalized.description : 'Description unavailable'}</p>
         <div className="flex items-center justify-between">
-          <div className="flex gap-2 flex-wrap">{normalized.tags.slice(0, 3).map(t => <span key={t} className={`text-xs font-medium ${styles.text} dark:${styles.textDark} ${styles.secondary} dark:${styles.darkBg} px-2.5 py-1 rounded-lg`}>{typeof t === 'string' ? t : 'Tag'}</span>)}</div>
+          {/* NEW: Dynamic Badges alongside standard tags */}
+        <div className="flex gap-2 flex-wrap">
+          {/* Your standard tags */}
+          {normalized.tags.slice(0, 3).map(t => (
+            <span key={t} className={`text-xs font-medium ${styles.text} dark:${styles.textDark} ${styles.secondary} dark:${styles.darkBg} px-2.5 py-1 rounded-lg`}>
+              {typeof t === 'string' ? t : 'Tag'}
+            </span>
+          ))}
+
+          {/* 1.26.30+ Badge */}
+          {normalized.supportedVersion?.includes("1.26.30") && (
+            <span className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold px-2.5 py-1 rounded-lg">
+              1.26.30+
+            </span>
+          )}
+
+          {/* Android Only Badge */}
+          {normalized.platforms?.length === 1 && normalized.platforms.includes("ANDROID") && (
+            <span className="bg-orange-500/20 text-orange-600 dark:text-orange-400 border border-orange-500/20 text-xs font-bold px-2.5 py-1 rounded-lg">
+              Android Only
+            </span>
+          )}
+        </div>
           <button className={`w-10 h-10 rounded-full ${styles.secondary} dark:${styles.darkBg} ${styles.text} dark:${styles.textDark} flex items-center justify-center group-active:scale-90 transition-transform`}><ChevronRight size={20} /></button>
         </div>
       </div>

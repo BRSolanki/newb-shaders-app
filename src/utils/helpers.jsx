@@ -10,14 +10,32 @@ export const getSocialIcon = (title) => {
   return <LinkIcon size={20} />;
 };
 
-export const normalizeShaderData = (shader) => ({
-  ...shader,
-  title: shader.title || "Untitled Shader",
-  thumbnail: shader.screenshots?.[0] || "https://via.placeholder.com/800x400?text=No+Image",
-  description: shader.description || "No description available.",
-  tags: Array.isArray(shader.tags) ? shader.tags : ["Shader"],
-  platforms: Array.isArray(shader.platforms) ? shader.platforms : [],
-  otherLinks: Array.isArray(shader.otherLinks) ? shader.otherLinks : [],
-  supportedVersion: shader.supportedVersion || "Unknown",
-  updated_at: shader.updated_at || "Unknown Date"
-});
+export const normalizeShaderData = (shader) => {
+  // 1. Define the path to the image in your public folder
+  const defaultImage = "/default-shader.jpg"; 
+  const cleanScreenshots = (Array.isArray(shader.screenshots) ? shader.screenshots : []).filter(url => {
+    if (typeof url !== 'string') return false;
+    // Strip out CurseForge project/gallery links unless it's a direct media link
+    if (url.includes('curseforge.com/minecraft-bedrock/') && !url.includes('media.forgecdn.net')) return false;
+    // Strip out discord channel links
+    if (url.includes('discord.com/channels')) return false;
+    return true;
+  });
+
+  const hasScreenshots = cleanScreenshots.length > 0;
+
+  return {
+    ...shader,
+    title: shader.title || "Untitled Shader",
+    // 2. Use the cleaned screenshot array
+    thumbnail: hasScreenshots ? cleanScreenshots[0] : defaultImage,
+    description: shader.description || "No description available.",
+    tags: Array.isArray(shader.tags) ? shader.tags : ["Shader"],
+    platforms: Array.isArray(shader.platforms) ? shader.platforms : [],
+    otherLinks: Array.isArray(shader.otherLinks) ? shader.otherLinks : [],
+    supportedVersion: shader.supportedVersion || "Unknown",
+    updated_at: shader.updated_at || "Unknown Date",
+    // 3. Fallback the gallery to the clean array
+    screenshots: hasScreenshots ? cleanScreenshots : [defaultImage]
+  };
+};
