@@ -4,7 +4,7 @@ import { normalizeShaderData } from '../utils/helpers';
 import { THEMES } from '../utils/constants';
 import { PlatformBadge } from '../components/Shared';
 
-const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare, onDownload }) => {
+const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare, onDownload, onImageClick }) => {
   const [downloading, setDownloading] = useState(false);
   const [showLoaderWarning, setShowLoaderWarning] = useState(false);
   
@@ -51,13 +51,20 @@ const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare
         </div>
       )}
 
-      {/* Header Buttons */}
-      <div className="fixed top-4 left-4 z-30">
-        <button onClick={onBack} className="p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition-colors active:scale-90 shadow-lg border border-white/10"><ArrowLeft size={24} /></button>
-      </div>
-      <div className="fixed top-4 right-4 z-30 flex gap-3">
-         <button onClick={() => toggleFavorite(shader.id)} className={`p-3 rounded-full backdrop-blur-md transition-all active:scale-90 shadow-lg border border-white/10 ${isFav ? 'bg-red-500/90 text-white' : 'bg-black/20 text-white hover:bg-black/40'}`}><Heart size={24} fill={isFav ? "currentColor" : "none"} /></button>
-         <button onClick={() => onShare(normalized)} className="p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition-colors active:scale-90 shadow-lg border border-white/10"><Share2 size={24} /></button>
+      {/* HEADER BUTTONS (FIXED FOR STATUS BAR OVERLAP) */}
+      <div className="fixed top-0 left-0 right-0 z-30 flex justify-between px-4 pt-[calc(1rem+env(safe-area-inset-top))] pointer-events-none">
+        <button onClick={onBack} className="pointer-events-auto p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition-colors active:scale-90 shadow-lg border border-white/10">
+          <ArrowLeft size={24} />
+        </button>
+        
+        <div className="flex gap-3 pointer-events-auto">
+          <button onClick={() => toggleFavorite(shader.id)} className={`p-3 rounded-full backdrop-blur-md transition-all active:scale-90 shadow-lg border border-white/10 ${isFav ? 'bg-red-500/90 text-white' : 'bg-black/20 text-white hover:bg-black/40'}`}>
+            <Heart size={24} fill={isFav ? "currentColor" : "none"} />
+          </button>
+          <button onClick={() => onShare(normalized)} className="p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition-colors active:scale-90 shadow-lg border border-white/10">
+            <Share2 size={24} />
+          </button>
+        </div>
       </div>
 
       {/* Hero Image */}
@@ -66,8 +73,8 @@ const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare
         <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-white dark:to-neutral-900 pointer-events-none" />
       </div>
 
-      {/* Content */}
-      <div className="-mt-20 relative px-6 pb-24 touch-pan-y">
+      {/* CONTENT (FIXED FOR NAVIGATION BAR OVERLAP) */}
+      <div className="-mt-20 relative px-6 pb-[calc(6rem+env(safe-area-inset-bottom))] touch-pan-y">
         <div className="flex flex-col gap-2 mb-6 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
           <div className="flex items-center gap-3">
              <span className="bg-white/10 backdrop-blur-md border border-white/20 text-white dark:text-white/90 text-xs font-bold px-2.5 py-1 rounded-lg tracking-wider uppercase shadow-sm">
@@ -94,6 +101,7 @@ const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare
           
           <div className="flex justify-center pt-2">
             <div className="flex gap-2 overflow-x-auto max-w-full pb-2 scrollbar-hide px-2">
+              {/* Map through the platforms individually to show the full Icon + Name */}
               {normalized.platforms.map(p => (
                 <PlatformBadge key={p} type={p} />
               ))}
@@ -116,7 +124,8 @@ const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare
                  <img
                    key={idx}
                    src={src}
-                   className="h-48 w-72 flex-shrink-0 object-cover rounded-2xl snap-center shadow-md active:opacity-80 transition-opacity bg-neutral-100 dark:bg-neutral-800"
+                   onClick={() => onImageClick && onImageClick(normalized.screenshots, idx)}
+                   className="h-48 w-72 flex-shrink-0 object-cover rounded-2xl snap-center shadow-md active:opacity-80 transition-opacity bg-neutral-100 dark:bg-neutral-800 cursor-pointer"
                    alt="Screenshot"
                 />
                ))}
