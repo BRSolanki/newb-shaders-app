@@ -5,6 +5,7 @@ import { Toast, Lightbox } from './components/Overlays';
 import { SkeletonCard } from './components/Shared';
 import SideMenu from './components/SideMenu';
 import { App as CapacitorApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
 import ShaderList from './views/ShaderList';
 import DevsList from './views/DevsList';
 import GuidesView from './views/GuidesView';
