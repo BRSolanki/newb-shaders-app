@@ -1,16 +1,17 @@
 import React from 'react';
+import React, { memo } from 'react';
 import { Heart, ChevronRight } from 'lucide-react';
 import { normalizeShaderData } from '../utils/helpers';
 import { THEMES } from '../utils/constants';
 import { PlatformBadge } from './Shared';
 
-const ShaderCard = ({ shader, onClick, index, isFav, compact, theme }) => {
+const ShaderCard = memo(({ shader, onClick, index, isFav, compact, theme }) => {
   const normalized = normalizeShaderData(shader);
   const styles = THEMES[theme] || THEMES['teal'];
 
   if (compact) {
     return (
-      <div onClick={onClick} style={{ animationDelay: `${index * 0.05}s` }} className="group relative bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer active:scale-[0.98] animate-fade-in-up opacity-0 flex h-24">
+      <div onClick={onClick} style={{ animationDelay: `${index * 0.05}s` }} className="group relative bg-white dark:bg-neutral-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer active:scale-[0.98] animate-fade-in-up opacity-0 flex h-24 will-change-transform">
         <div className="w-24 h-full flex-shrink-0">
           <img src={normalized.thumbnail} alt={normalized.title} className="w-full h-full object-cover" />
         </div>
@@ -31,7 +32,7 @@ const ShaderCard = ({ shader, onClick, index, isFav, compact, theme }) => {
   return (
     <div onClick={onClick} style={{ animationDelay: `${index * 0.1}s` }} className="group relative bg-white dark:bg-neutral-800 rounded-[2rem] overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer hover:-translate-y-1 animate-fade-in-up opacity-0">
       <div className="h-56 w-full overflow-hidden relative">
-        <img src={normalized.thumbnail} alt={normalized.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+        <img src={normalized.thumbnail} alt={normalized.title} loading="lazy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 will-change-transform" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6">
           <div className="flex justify-between items-end">
             <div>
@@ -82,6 +83,6 @@ const ShaderCard = ({ shader, onClick, index, isFav, compact, theme }) => {
       </div>
     </div>
   );
-};
+});
 
 export default ShaderCard;

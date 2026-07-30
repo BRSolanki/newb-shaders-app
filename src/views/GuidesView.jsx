@@ -23,13 +23,20 @@ const GuidesView = ({ themeColor }) => {
           </div>
         </div>
 
-        {/* MB Loader Tool */}
+       {/* MB Loader Tool */}
         <div className="bg-white dark:bg-neutral-800 rounded-3xl p-6 shadow-md border border-neutral-100 dark:border-neutral-700/50 relative overflow-hidden group">
           <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
             <Settings size={100} />
           </div>
           <div className="flex items-center gap-5 mb-5 relative z-10">
-            <img src="https://play-lh.googleusercontent.com/MFWpr8QhdY3DUKVc8bGFCj7yrw4q3s5CY5Cj676HuowOfKmNJosBFW--208oR-dfqNk=w240-h480-rw" className="w-16 h-16 rounded-2xl shadow-sm" alt="MB Loader" onError={(e) => { e.target.onerror = null; e.target.src = 'https://via.placeholder.com/64?text=MB' }} />
+            
+            {/* UPDATED: Local Image Path */}
+            <img 
+              src="/mbloader.png" 
+              className="w-16 h-16 rounded-2xl shadow-sm object-cover bg-neutral-100 dark:bg-neutral-700" 
+              alt="MB Loader" 
+            />
+            
             <div>
               <h3 className="text-xl font-bold text-neutral-900 dark:text-white">MB Loader</h3>
               <p className="text-sm text-neutral-500 font-medium">By Bambosan</p>
@@ -39,13 +46,13 @@ const GuidesView = ({ themeColor }) => {
             An essential tool for loading custom shaders on Minecraft Bedrock (RenderDragon). Allows you to import material files directly without complex patching.
           </p>
           <button 
-            onClick={() => window.open('https://play.google.com/store/apps/details?id=io.bambosan.mbloader&pcampaignid=web_share', '_blank')} 
-            className="w-full py-3.5 rounded-2xl bg-[#00Cca3] text-white font-bold text-sm flex items-center justify-center gap-3 active:scale-95 transition-transform hover:brightness-105 shadow-lg shadow-[#00cca3]/20 relative z-10"
+            //  {/* UPDATED: Paste your new Play Store URL here */}
+             onClick={() => window.open('https://play.google.com/store/apps/details?id=io.github.bambosan.mbloader', '_blank')}
+             className="w-full py-3.5 rounded-2xl bg-[#00Cca3] text-white font-bold text-sm flex items-center justify-center gap-3 active:scale-95 transition-transform hover:brightness-105 shadow-lg shadow-[#00cca3]/20 relative z-10"
           >
             <Play size={18} fill="currentColor" /> Get on Play Store
           </button>
         </div>
-
         {/* Installation Guide */}
         <div>
           <h3 className="text-xl font-bold text-neutral-900 dark:text-white px-2 mb-4">How to Install</h3>

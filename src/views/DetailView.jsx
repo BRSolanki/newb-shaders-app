@@ -51,8 +51,9 @@ const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare
         </div>
       )}
 
+     
       {/* HEADER BUTTONS (FIXED FOR STATUS BAR OVERLAP) */}
-      <div className="fixed top-0 left-0 right-0 z-30 flex justify-between px-4 pt-[calc(1rem+env(safe-area-inset-top))] pointer-events-none">
+      <div className="fixed top-0 left-0 right-0 z-30 flex justify-between px-4 pt-12 pointer-events-none">
         <button onClick={onBack} className="pointer-events-auto p-3 rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/40 transition-colors active:scale-90 shadow-lg border border-white/10">
           <ArrowLeft size={24} />
         </button>
