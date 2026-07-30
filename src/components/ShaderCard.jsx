@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import React, { memo } from 'react';
 import { Heart, ChevronRight } from 'lucide-react';
 import { normalizeShaderData } from '../utils/helpers';
