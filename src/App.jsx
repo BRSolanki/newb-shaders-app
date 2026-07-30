@@ -52,20 +52,27 @@ export default function App() {
 
   // Back Navigation & Android Hardware Back Button
   useEffect(() => {
-    const handleBack = () => {
+        const handleBack = () => {
       if (lightboxImages) { setLightboxImages(null); return; }
       if (selectedShader) { setSelectedShader(null); return; }
       if (selectedDev) { setSelectedDev(null); return; }
       if (isMenuOpen) { setIsMenuOpen(false); return; }
       
       if (exitAttempt) { 
-        CapacitorApp.exitApp(); // Closes the Android app
+        // CHECK IF NATIVE ANDROID BEFORE EXITING
+        if (Capacitor.isNativePlatform()) {
+          CapacitorApp.exitApp(); 
+        } else {
+          // If on the web, just go back in browser history
+          window.history.back();
+        }
       } else { 
         setExitAttempt(true); 
-        showToast("Press back again to exit", "info"); 
+        showToast(Capacitor.isNativePlatform() ? "Press back again to exit" : "Press back again to leave", "info"); 
         setTimeout(() => setExitAttempt(false), 2000); 
       }
     };
+
 
     // Web Browser Back Button
     const handlePopState = (event) => {
