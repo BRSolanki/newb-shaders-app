@@ -71,7 +71,7 @@ npx cap sync
 
 
 3. Open Android Studio to compile and run the app on a physical device or emulator:
-```bash
+```  bash
 npx cap open android
 
 ```
@@ -95,5 +95,4 @@ Built by **Balvant Solanki** (BRSolanki).
 
 This project is licensed under the MIT License.
 
-```
 
