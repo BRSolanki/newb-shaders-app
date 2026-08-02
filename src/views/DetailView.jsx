@@ -3,6 +3,7 @@ import { ArrowLeft, Heart, Share2, Download, ExternalLink, AlertTriangle } from 
 import { normalizeShaderData } from '../utils/helpers';
 import { THEMES } from '../utils/constants';
 import { PlatformBadge } from '../components/Shared';
+import SEO from '../components/SEO';
 
 const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare, onDownload, onImageClick }) => {
   const [downloading, setDownloading] = useState(false);
@@ -27,7 +28,11 @@ const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare
 
   return (
     <div className="fixed inset-0 z-50 bg-white dark:bg-neutral-900 overflow-y-auto animate-fade-in-up">
-      
+      <SEO 
+        title={normalized.title}
+        description={typeof normalized.description === 'string' ? normalized.description.substring(0, 150) + '...' : undefined}
+        image={normalized.thumbnail}
+      />
       {/* CUSTOM MODAL FOR 1.26.30+ */}
       {showLoaderWarning && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in-up">
