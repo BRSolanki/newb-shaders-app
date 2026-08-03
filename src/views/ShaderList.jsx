@@ -62,18 +62,14 @@ const ShaderList = ({
   
   return (
     <>
-      {/* 
-        FIX 1: Changed to 'fixed top-[112px]'. This physically anchors it exactly 
-        below your main header, completely eliminating the random scroll gaps.
-        FIX 2: Added 'pb-5' to the parent container. This guarantees 20px of space
-        between the filter chips and the bottom border line.
-      */}
-      <div 
+     
+  <div 
         className={`fixed top-[112px] left-0 right-0 z-40 pt-3 pb-5 bg-neutral-50 dark:bg-neutral-900 shadow-md transition-transform duration-300 border-b border-neutral-200 dark:border-neutral-800 ${isNavHidden ? '-translate-y-[200%]' : 'translate-y-0'}`}
       >
-        <div className="w-full max-w-md mx-auto md:max-w-full">
+      
+        <div className="w-full max-w-5xl mx-auto">
           
-          {/* Search Bar Container */}
+         {/* Search Bar Container */}
           <div className="px-4 mb-4">
             <div className="relative group">
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-neutral-500">
@@ -102,7 +98,7 @@ const ShaderList = ({
             </div>
           </div>
 
-          {/* Filter Buttons Container */}
+         {/* Filter Buttons Container */}
           <div className="flex gap-2 overflow-x-auto px-4 items-center scrollbar-hide">
             <button onClick={() => setSortOrder(prev => prev === 'Newest' ? 'A-Z' : 'Newest')} className="p-2.5 rounded-xl bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 active:scale-95 transition-transform flex-shrink-0 shadow-sm border border-neutral-100 dark:border-neutral-700"><ArrowDownUp size={18} /></button>
             <button onClick={() => setCompactMode(!compactMode)} className="p-2.5 rounded-xl bg-white dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 active:scale-95 transition-transform flex-shrink-0 shadow-sm border border-neutral-100 dark:border-neutral-700">
@@ -115,14 +111,12 @@ const ShaderList = ({
               <Chip key={ver.base} label={ver.base} active={filterTag === ver.base} onClick={() => setFilterTag(ver.base)} theme={themeColor} />
             ))}
           </div>
-          
+
         </div>
       </div>
 
-      {/* 
-        FIX 3: Added pt-[160px] to push the cards down perfectly below the new fixed header.
-      */}
-      <div className={`relative w-full max-w-md mx-auto md:max-w-full z-0 px-4 pt-[160px] min-h-[50vh] ${compactMode ? 'space-y-3' : 'space-y-6'}`}>
+   
+      <div className={`relative w-full max-w-5xl mx-auto z-0 px-4 pt-[160px] min-h-[50vh] grid grid-cols-1 md:grid-cols-2 items-start ${compactMode ? 'gap-3' : 'gap-6'}`}>
         {filteredShaders.map((shader, index) => (
           <ShaderCard 
             key={shader.id ? shader.id : `shader-${index}`} 
@@ -135,7 +129,7 @@ const ShaderList = ({
           />
         ))}
         {filteredShaders.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-neutral-500">
+          <div className="col-span-1 md:col-span-2 flex flex-col items-center justify-center py-20 text-neutral-500">
             <Search size={48} className="text-neutral-300 dark:text-neutral-700 mb-4" />
             <p className="font-medium">No shaders found matching your criteria.</p>
           </div>

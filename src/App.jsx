@@ -228,34 +228,40 @@ const handleContainerScroll = (e) => {
       )}
 
       {/* MAIN BACKGROUND APP: Always rendered */}
-    <header className={`fixed top-0 left-0 right-0 z-50 px-6 pt-12 pb-2 flex items-center justify-between bg-neutral-50/80 dark:bg-neutral-900/80 backdrop-blur-sm transition-transform duration-300 ${isNavHidden ? '-translate-y-full' : 'translate-y-0'}`}>
-  <div>
-    <h1 className="text-3xl font-extrabold text-neutral-900 dark:text-white tracking-tight">
-      {activeTab === 'shaders' && 'Newb Hub'}
-      {activeTab === 'devs' && 'Developers'}
-      {activeTab === 'guides' && 'Guides'}
-      {activeTab === 'settings' && 'Settings'}
-    </h1>
-    <p className="text-neutral-500 text-sm font-medium mt-0.5">
-      {activeTab === 'shaders' && 'Explore community shaders'}
-      {activeTab === 'devs' && 'Meet the creators'}
-      {activeTab === 'guides' && 'Tutorials & Tools'}
-      {activeTab === 'settings' && 'Customize your experience'}
-    </p>
-  </div>
-  <button onClick={() => setIsMenuOpen(true)} className="p-3 rounded-2xl bg-white dark:bg-neutral-800 shadow-sm text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors active:scale-95 border border-white/50 dark:border-neutral-700">
-    <Menu size={22} />
-  </button>
-</header>
+  
+  
+      <header className={`fixed top-0 left-0 right-0 z-50 bg-neutral-50/80 dark:bg-neutral-900/80 backdrop-blur-sm transition-transform duration-300 ${isNavHidden ? '-translate-y-full' : 'translate-y-0'}`}>
+        <div className="w-full max-w-5xl mx-auto px-6 pt-12 pb-2 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-extrabold text-neutral-900 dark:text-white tracking-tight">
+              {activeTab === 'shaders' && 'Newb Hub'}
+              {activeTab === 'devs' && 'Developers'}
+              {activeTab === 'guides' && 'Guides'}
+              {activeTab === 'settings' && 'Settings'}
+            </h1>
+            <p className="text-neutral-500 text-sm font-medium mt-0.5">
+              {activeTab === 'shaders' && 'Explore community shaders'}
+              {activeTab === 'devs' && 'Meet the creators'}
+              {activeTab === 'guides' && 'Tutorials & Tools'}
+              {activeTab === 'settings' && 'Customize your experience'}
+            </p>
+          </div>
+          <button onClick={() => setIsMenuOpen(true)} className="p-3 rounded-2xl bg-white dark:bg-neutral-800 shadow-sm text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors active:scale-95 border border-white/50 dark:border-neutral-700">
+            <Menu size={22} />
+          </button>
+        </div>
+      </header>
 
+      
       <main 
         ref={containerRef}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onScroll={handleContainerScroll}
         onTouchEnd={handleTouchEnd}
-        className="w-full max-w-md mx-auto md:max-w-full pb-32 pt-28 h-screen overflow-y-auto scrollbar-hide relative"
+        className="w-full max-w-5xl mx-auto pb-32 pt-28 h-screen overflow-y-auto scrollbar-hide relative"
       >
+      
         <div className={`ptr-spinner ${refreshing || pullY > 0 ? 'visible' : ''}`} style={{ transform: `translateY(${pullY}px)` }}>
            <div className={`p-3 bg-white dark:bg-neutral-800 rounded-full shadow-lg ${themeStyles.text}`}>
              <RefreshCw size={24} className={refreshing ? 'animate-spin-slow' : ''} style={{ transform: `rotate(${pullY * 3}deg)` }} />
@@ -310,8 +316,9 @@ const handleContainerScroll = (e) => {
         )}
       </main>
 
-   <nav className={`fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-neutral-900/90 backdrop-blur-xl border-t border-neutral-200 dark:border-neutral-800 pb-safe z-30 shadow-2xl transition-transform duration-300 ${isNavHidden ? 'translate-y-full' : 'translate-y-0'}`}> 
-   <div className="flex justify-around items-center h-20 max-w-md mx-auto relative">
+
+      <nav className={`fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-neutral-900/90 backdrop-blur-xl border-t border-neutral-200 dark:border-neutral-800 pb-safe z-30 shadow-2xl transition-transform duration-300 ${isNavHidden ? 'translate-y-full' : 'translate-y-0'}`}> 
+        <div className="flex justify-around items-center h-20 w-full max-w-5xl mx-auto relative">
           {[
             { id: 'shaders', icon: Layers, label: 'Hub' },
             { id: 'devs', icon: User, label: 'Devs' },
