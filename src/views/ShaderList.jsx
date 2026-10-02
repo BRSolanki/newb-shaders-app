@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Search, Clock, ArrowLeft, ArrowDownUp, LayoutGrid, List } from 'lucide-react';
 import ShaderCard from '../components/ShaderCard';
 import { Chip } from '../components/Shared';
-import { normalizeShaderData, TAG_OPTIONS } from '../utils/index';
+import { normalizeShaderData, TAG_OPTIONS, isLoaderRequired, matchesVersionFilter } from '../utils/index';
 
 const ShaderList = ({ 
   data, favorites, onShaderClick, compactMode, setCompactMode, themeColor, isNavHidden 
@@ -37,12 +37,11 @@ const ShaderList = ({
       
       let matchesTag = true;
       if (filterTag !== 'All') {
-        if (filterTag === '1.26.30+') {
-          matchesTag = norm.supportedVersion && norm.supportedVersion.includes('1.26.30');
-        } else if (filterTag === 'Android Only') {
+        if (filterTag === 'Android Only') {
           matchesTag = norm.platforms && norm.platforms.length === 1 && norm.platforms.includes('ANDROID');
         } else if (/^\d/.test(filterTag)) {
-          matchesTag = norm.supportedVersion && norm.supportedVersion.includes(filterTag);
+          // Version-based filter: match against the supportedVersion string
+          matchesTag = matchesVersionFilter(norm.supportedVersion, filterTag);
         } else {
           matchesTag = norm.tags && norm.tags.includes(filterTag);
         }
@@ -108,7 +107,7 @@ const ShaderList = ({
             <Chip label="All" active={filterTag === 'All'} onClick={() => setFilterTag('All')} theme={themeColor} />
             {TAG_OPTIONS.map(tag => <Chip key={tag} label={tag} active={filterTag === tag} onClick={() => setFilterTag(tag)} theme={themeColor} />)}
             {data.versions?.map((ver) => (
-              <Chip key={ver.base} label={ver.base} active={filterTag === ver.base} onClick={() => setFilterTag(ver.base)} theme={themeColor} />
+              <Chip key={ver.base} label={ver.base + "+"} active={filterTag === ver.base} onClick={() => setFilterTag(ver.base)} theme={themeColor} />
             ))}
           </div>
 

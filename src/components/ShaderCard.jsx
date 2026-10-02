@@ -2,7 +2,7 @@
 import React, { memo } from 'react';
 import { Heart, ChevronRight } from 'lucide-react';
 import { normalizeShaderData } from '../utils/helpers';
-import { THEMES } from '../utils/constants';
+import { THEMES, isLoaderRequired } from '../utils/constants';
 import { PlatformBadge } from './Shared';
 
 const ShaderCard = memo(({ shader, onClick, index, isFav, compact, theme }) => {
@@ -64,10 +64,10 @@ const ShaderCard = memo(({ shader, onClick, index, isFav, compact, theme }) => {
             </span>
           ))}
 
-          {/* 1.26.30+ Badge */}
-          {normalized.supportedVersion?.includes("1.26.30") && (
+          {/* Loader Required Badge (v1.26.30+) */}
+          {isLoaderRequired(normalized.supportedVersion) && (
             <span className="bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold px-2.5 py-1 rounded-lg">
-              1.26.30+
+              {normalized.supportedVersion}
             </span>
           )}
 

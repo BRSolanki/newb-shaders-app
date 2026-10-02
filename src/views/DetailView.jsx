@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowLeft, Heart, Share2, Download, ExternalLink, AlertTriangle } from 'lucide-react';
 import { normalizeShaderData } from '../utils/helpers';
-import { THEMES } from '../utils/constants';
+import { THEMES, isLoaderRequired } from '../utils/constants';
 import { PlatformBadge } from '../components/Shared';
 import SEO from '../components/SEO';
 
@@ -13,7 +13,7 @@ const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare
   const normalized = normalizeShaderData(shader);
 
   const handleDownloadClick = () => {
-    if (normalized.supportedVersion?.includes("1.26.30")) {
+    if (isLoaderRequired(normalized.supportedVersion)) {
       setShowLoaderWarning(true);
     } else {
       proceedWithDownload();
@@ -42,7 +42,7 @@ const DetailView = ({ shader, onBack, isFav, toggleFavorite, themeColor, onShare
             </div>
             <h3 className="text-xl font-bold text-neutral-900 dark:text-white mb-2">Game Loader Required</h3>
             <p className="text-neutral-600 dark:text-neutral-400 text-sm mb-4 leading-relaxed">
-              {normalized.title} requires a dedicated game loader to work on Minecraft v1.26.30+.
+              {normalized.title} requires a dedicated game loader to work on Minecraft {normalized.supportedVersion}.
             </p>
             <div className="bg-neutral-50 dark:bg-neutral-900 rounded-xl p-3 mb-6 space-y-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
               <div className="flex justify-between"><span>Android:</span> <span className="font-bold text-teal-600 dark:text-teal-400">MB Loader</span></div>
